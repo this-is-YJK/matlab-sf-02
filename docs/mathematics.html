@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenario Simulator - Mathematical Foundations</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--primary);
+            background: var(--bg);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--secondary);
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.2em;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .formula-box {
+            background: #f4f6f7;
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            overflow-x: auto;
+        }
+
+        .example {
+            background: #e8f6f3;
+            border-left: 4px solid #1abc9c;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .note {
+            background: #fef9e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        ul {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: var(--secondary);
+            color: white;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        code {
+            background: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .nav {
+            position: sticky;
+            top: 20px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            margin-bottom: 30px;
+        }
+
+        .nav h4 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav li {
+            margin: 5px 0;
+        }
+
+        .nav a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover {
+            color: var(--secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--primary);
+            color: white;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Scenario Simulator</h1>
+        <p>Mathematical Foundations for Multi-Platform Tracking</p>
+    </header>
+
+    <div class="container">
+        <div class="nav">
+            <h4>Contents</h4>
+            <ul>
+                <li><a href="#coordinates">1. Coordinate Systems</a></li>
+                <li><a href="#transformations">2. Coordinate Transformations</a></li>
+                <li><a href="#attitude">3. Attitude Calculation</a></li>
+                <li><a href="#trajectory">4. Trajectory Generation</a></li>
+                <li><a href="#wgs84">5. WGS84 Reference Ellipsoid</a></li>
+                <li><a href="#sensors">6. Sensor Models</a></li>
+                <li><a href="#geometry">7. Sensor Geometry and Mounting</a></li>
+                <li><a href="#errors">8. Measurement Error Models</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Coordinate Systems -->
+        <div class="card" id="coordinates">
+            <h2>1. Coordinate Systems</h2>
+
+            <p>This simulator uses two primary coordinate reference systems for defining platform positions and trajectories. Understanding the distinction between these systems is essential for correct scenario configuration.</p>
+
+            <h3>1.1 Earth-Centered Earth-Fixed (ECEF)</h3>
+            <p>The ECEF coordinate system is a Cartesian coordinate system with its origin at the Earth's center of mass. The axes are defined as:</p>
+            <ul>
+                <li><strong>X-axis:</strong> Points from the center toward the intersection of the equator (0 deg latitude) and the prime meridian (0 deg longitude)</li>
+                <li><strong>Y-axis:</strong> Points from the center toward the intersection of the equator and 90 deg East longitude</li>
+                <li><strong>Z-axis:</strong> Points from the center toward the North Pole</li>
+            </ul>
+
+            <div class="formula-box">
+                <p><strong>Position vector in ECEF:</strong></p>
+                $$ \vec{r}_{ECEF} = \begin{bmatrix} x \\ y \\ z \end{bmatrix} \quad \text{(units: meters)} $$
+            </div>
+
+            <div class="note">
+                <strong>Note:</strong> The ECEF frame rotates with the Earth, so positions expressed in ECEF are fixed relative to the Earth's surface (ignoring tectonic motion). This makes it ideal for tracking stationary or moving objects on or near Earth.
+            </div>
+
+            <h3>1.2 Geodetic Coordinates (LLA)</h3>
+            <p>Geodetic coordinates describe a position using latitude, longitude, and altitude above a reference ellipsoid (WGS84 in this implementation).</p>
+
+            <ul>
+                <li><strong>Latitude (Lat):</strong> Angular distance north (+) or south (-) of the equator, ranging from -90 deg to +90 deg</li>
+                <li><strong>Longitude (Lon):</strong> Angular distance east (+) or west (-) of the prime meridian, ranging from -180 deg to +180 deg</li>
+                <li><strong>Altitude (Alt):</strong> Height above the reference ellipsoid surface (not mean sea level)</li>
+            </ul>
+
+            <div class="formula-box">
+                <p><strong>Geodetic position:</strong></p>
+                $$ \vec{r}_{LLA} = \begin{bmatrix} \phi \\ \lambda \\ h \end{bmatrix} = \begin{bmatrix} \text{latitude (deg)} \\ \text{longitude (deg)} \\ \text{altitude (m)} \end{bmatrix} $$
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>ECEF</th>
+                        <th>Geodetic (LLA)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Frame Type</td>
+                        <td>Cartesian</td>
+                        <td>Curvilinear</td>
+                    </tr>
+                    <tr>
+                        <td>Units</td>
+                        <td>Meters</td>
+                        <td>Degrees, meters</td>
+                    </tr>
+                    <tr>
+                        <td>Intuitive</td>
+                        <td>No</td>
+                        <td>Yes (human-readable)</td>
+                    </tr>
+                    <tr>
+                        <td>Computation</td>
+                        <td>Simple (linear)</td>
+                        <td>Complex (nonlinear)</td>
+                    </tr>
+                    <tr>
+                        <td>Use Case</td>
+                        <td>Simulations, tracking</td>
+                        <td>Navigation, waypoints</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 2: Coordinate Transformations -->
+        <div class="card" id="transformations">
+            <h2>2. Coordinate Transformations</h2>
+
+            <p>The simulator converts between geodetic (LLA) and ECEF coordinates using the WGS84 reference ellipsoid parameters.</p>
+
+            <h3>2.1 WGS84 Ellipsoid Parameters</h3>
+            <div class="formula-box">
+                $$ a = 6378.137 \text{ km} \quad \text{(semi-major axis)} $$
+                $$ f = \frac{1}{298.257223563} \quad \text{(flattening)} $$
+                $$ b = a(1-f) = 6356.752 \text{ km} \quad \text{(semi-minor axis)} $$
+                $$ e^2 = 1 - \frac{b^2}{a^2} = 0.00669438 \quad \text{(eccentricity squared)} $$
+            </div>
+
+            <h3>2.2 LLA to ECEF Conversion</h3>
+            <p>Given geodetic coordinates $(\phi, \lambda, h)$, the ECEF coordinates $(x, y, z)$ are computed as:</p>
+
+            <div class="formula-box">
+                <p><strong>Radius of curvature in the prime vertical:</strong></p>
+                $$ N(\phi) = \frac{a}{\sqrt{1 - e^2 \sin^2 \phi}} $$
+
+                <p><strong>ECEF coordinates:</strong></p>
+                $$ x = (N(\phi) + h) \cos \phi \cos \lambda $$
+                $$ y = (N(\phi) + h) \cos \phi \sin \lambda $$
+                $$ z = \left( N(\phi)(1 - e^2) + h \right) \sin \phi $$
+            </div>
+
+            <div class="example">
+                <strong>Example:</strong> A position at latitude 45 deg, longitude 90 deg, altitude 10,000 m:
+                $$ N(45\deg) = \frac{6378137}{\sqrt{1 - 0.006694 \times \sin^2(45\deg)}} \approx 6388838 \text{ m} $$
+                $$ x \approx 0.638 \times 10^7 \text{ m}, \quad y \approx 0.638 \times 10^7 \text{ m}, \quad z \approx 0.450 \times 10^7 \text{ m} $$
+            </div>
+
+            <h3>2.3 ECEF to LLA Conversion</h3>
+            <p>The inverse transformation requires an iterative solution because latitude appears on both sides of the equation. The algorithm uses:</p>
+
+            <div class="formula-box">
+                <p><strong>Step 1:</strong> Calculate longitude (closed-form)</p>
+                $$ \lambda = \arctan\left( \frac{y}{x} \right) $$
+
+                <p><strong>Step 2:</strong> Iterate for latitude</p>
+                $$ \phi_{n+1} = \arctan\left( \frac{z + e^2 N(\phi_n) \sin \phi_n}{\sqrt{x^2 + y^2}} \right) $$
+
+                <p><strong>Step 3:</strong> Calculate altitude</p>
+                $$ h = \frac{\sqrt{x^2 + y^2}}{\cos \phi} - N(\phi) $$
+            </div>
+
+            <div class="note">
+                <strong>Implementation Note:</strong> MATLAB's <code>geodetic2ecef</code> and <code>ecef2geodetic</code> functions handle these calculations efficiently. The iteration typically converges within 3-5 steps to sub-millimeter accuracy.
+            </div>
+        </div>
+
+        <!-- Section 3: Attitude Calculation -->
+        <div class="card" id="attitude">
+            <h2>3. Attitude Calculation</h2>
+
+            <p>Aircraft attitude is described by three Euler angles: heading (yaw), pitch, and roll. The simulator derives these from the velocity vector.</p>
+
+            <h3>3.1 Heading (Yaw) Angle</h3>
+            <p>Heading is the horizontal direction of motion, measured clockwise from true North.</p>
+
+            <div class="formula-box">
+                <p><strong>Given ECEF velocity components $(v_x, v_y, v_z)$:</strong></p>
+                $$ \psi = \arctan\left( \frac{v_x}{v_y} \right) \times \frac{180}{\pi} $$
+
+                <p><strong>Normalization to [0, 360 deg):</strong></p>
+                $$ \psi_{normalized} = \begin{cases}
+                    \psi + 360 & \text{if } \psi < 0 \\
+                    \psi & \text{otherwise}
+                \end{cases} $$
+            </div>
+
+            <p>Where:</p>
+            <ul>
+                <li>$v_x$ = velocity component toward 0 deg East longitude</li>
+                <li>$v_y$ = velocity component toward the North Pole (at origin)</li>
+            </ul>
+
+            <h3>3.2 Pitch Angle</h3>
+            <p>Pitch is the angle between the velocity vector and the local horizontal plane.</p>
+
+            <div class="formula-box">
+                <p><strong>Horizontal speed:</strong></p>
+                $$ v_{horiz} = \sqrt{v_x^2 + v_y^2} $$
+
+                <p><strong>Total speed:</strong></p>
+                $$ v_{total} = \sqrt{v_x^2 + v_y^2 + v_z^2} $$
+
+                <p><strong>Pitch angle:</strong></p>
+                $$ \theta = \arcsin\left( \frac{v_z}{v_{total}} \right) \times \frac{180}{\pi} $$
+            </div>
+
+            <div class="example">
+                <strong>Physical interpretation:</strong>
+                <ul>
+                    <li>$\theta > 0$: Climbing (velocity vector above horizontal)</li>
+                    <li>$\theta = 0$: Level flight</li>
+                    <li>$\theta < 0$: Descending (velocity vector below horizontal)</li>
+                </ul>
+            </div>
+
+            <h3>3.3 Roll Angle</h3>
+            <p>Roll (bank angle) is estimated from the rate of heading change, based on the coordinated turn assumption.</p>
+
+            <div class="formula-box">
+                <p><strong>Heading rate from successive measurements:</strong></p>
+                $$ \dot{\psi} = \frac{\psi_{current} - \psi_{previous}}{\Delta t} $$
+
+                <p><strong>Coordinated turn equation:</strong></p>
+                $$ \tan(\phi_{roll}) = \frac{v_{horiz} \cdot \dot{\psi}}{g} $$
+
+                <p><strong>Roll angle:</strong></p>
+                $$ \phi_{roll} = \arctan\left( \frac{v_{horiz} \cdot \dot{\psi}}{g} \right) \times \frac{180}{\pi} $$
+            </div>
+
+            <p>Where $g = 9.81$ m/s$^2$ is the acceleration due to gravity.</p>
+
+            <div class="note">
+                <strong>Coordinated Turn Assumption:</strong> In a coordinated turn, the aircraft banks such that the lift force provides both the vertical component (to counteract weight) and the horizontal component (to provide centripetal acceleration for the turn). Zero sideslip is maintained.
+            </div>
+
+            <h3>3.4 Attitude Smoothing</h3>
+            <p>To prevent unrealistic jumps in attitude angles (which would imply infinite angular acceleration), the simulator applies rate limiting:</p>
+
+            <div class="formula-box">
+                $$ \psi_{output} = \begin{cases}
+                    \psi_{prev} + \dot{\psi}_{max} \cdot \Delta t & \text{if } |\Delta\psi| > \dot{\psi}_{max} \cdot \Delta t \\
+                    \psi_{current} & \text{otherwise}
+                \end{cases} $$
+            </div>
+
+            <p>Default maximum turn rate: 3 deg/s for fixed-wing aircraft.</p>
+        </div>
+
+        <!-- Section 4: Trajectory Generation -->
+        <div class="card" id="trajectory">
+            <h2>4. Trajectory Generation</h2>
+
+            <p>Platform trajectories are generated using MATLAB's <code>waypointTrajectory</code>, which interpolates between user-defined waypoints.</p>
+
+            <h3>4.1 Waypoint Interpolation</h3>
+            <p>Given waypoints $\vec{r}_1, \vec{r}_2, \ldots, \vec{r}_n$ at corresponding times $t_1, t_2, \ldots, t_n$, the trajectory is computed as:</p>
+
+            <div class="formula-box">
+                <p><strong>Position interpolation along segment $i$ (from $\vec{r}_i$ to $\vec{r}_{i+1}$):</strong></p>
+                $$ \vec{r}(t) = \vec{r}_i + \frac{t - t_i}{t_{i+1} - t_i} (\vec{r}_{i+1} - \vec{r}_i) $$
+            </div>
+
+            <p>The position varies linearly, resulting in constant velocity between waypoints. Velocity magnitude is determined by the distance and time between consecutive waypoints:</p>
+
+            <div class="formula-box">
+                $$ \vec{v}_i = \frac{\vec{r}_{i+1} - \vec{r}_i}{t_{i+1} - t_i} $$
+            </div>
+
+            <h3>4.2 Smoothed Trajectory</h3>
+            <p>MATLAB's <code>waypointTrajectory</code> provides several interpolation methods. By default, it uses <strong>cubic polynomial interpolation</strong> for smoother velocity transitions:</p>
+
+            <div class="formula-box">
+                <p><strong>Cubic Hermite spline:</strong></p>
+                $$ \vec{r}(t) = h_{00}(s) \vec{r}_i + h_{10}(s) (t_{i+1}-t_i) \vec{v}_i \cdot 0 + h_{01}(s) \vec{r}_{i+1} + h_{11}(s) (t_{i+1}-t_i) \vec{v}_{i+1} \cdot 0 $$
+            </div>
+
+            <p>where $s = \frac{t - t_i}{t_{i+1} - t_i}$ is the normalized parameter and $h_{00}, h_{10}, h_{01}, h_{11}$ are the Hermite basis functions.</p>
+
+            <h3>4.3 Limitations</h3>
+            <p>The linear waypoint model has inherent limitations for realistic aircraft simulation:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Limitation</th>
+                        <th>Impact</th>
+                        <th>Mitigation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Instant velocity change at waypoints</td>
+                        <td>Unrealistic accelerations</td>
+                        <td>Add intermediate waypoints</td>
+                    </tr>
+                    <tr>
+                        <td>No turn rate limiting</td>
+                        <td>Unrealistic turns</td>
+                        <td>Post-process attitude</td>
+                    </tr>
+                    <tr>
+                        <td>No climb rate limiting</td>
+                        <td>Unrealistic climbs</td>
+                        <td>Add climb/descent waypoints</td>
+                    </tr>
+                    <tr>
+                        <td>Ignored terrain</td>
+                        <td>Ground collisions</td>
+                        <td>Manual altitude planning</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="example">
+                <strong>Recommended practice:</strong> For realistic aircraft trajectories, include intermediate waypoints at turn points with a straight segment before and after the turn. This creates a path: <em>straight</em> &rarr; <em>gradual turn</em> &rarr; <em>straight</em>.
+            </div>
+        </div>
+
+        <!-- Section 5: WGS84 Reference -->
+        <div class="card" id="wgs84">
+            <h2>5. WGS84 Reference Ellipsoid</h2>
+
+            <p>The World Geodetic System 1984 (WGS84) is the standard reference ellipsoid used by GPS and this simulator.</p>
+
+            <h3>5.1 Physical Definition</h3>
+            <div class="formula-box">
+                <p><strong>Ellipsoid surface equation:</strong></p>
+                $$ \frac{x^2 + y^2}{a^2} + \frac{z^2}{b^2} = 1 $$
+
+                <p><strong>where:</strong></p>
+                $$ a = 6,378,137 \text{ m (equatorial radius)} $$
+                $$ b = 6,356,752.314 \text{ m (polar radius)} $$
+            </div>
+
+            <h3>5.2 Key Parameters</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Symbol</th>
+                        <th>Value</th>
+                        <th>Definition</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Semi-major axis</td>
+                        <td>$a$</td>
+                        <td>6,378,137 m</td>
+                        <td>Equatorial radius</td>
+                    </tr>
+                    <tr>
+                        <td>Semi-minor axis</td>
+                        <td>$b$</td>
+                        <td>6,356,752 m</td>
+                        <td>Polar radius</td>
+                    </tr>
+                    <tr>
+                        <td>Flattening</td>
+                        <td>$f$</td>
+                        <td>1/298.257</td>
+                        <td>$(a-b)/a$</td>
+                    </tr>
+                    <tr>
+                        <td>First eccentricity squared</td>
+                        <td>$e^2$</td>
+                        <td>0.00669438</td>
+                        <td>$(a^2-b^2)/a^2$</td>
+                    </tr>
+                    <tr>
+                        <td>Angular velocity</td>
+                        <td>$\omega$</td>
+                        <td>7.292115e-5 rad/s</td>
+                        <td>Earth's rotation rate</td>
+                    </tr>
+                    <tr>
+                        <td>Gravitational constant</td>
+                        <td>$GM$</td>
+                        <td>3.986004e14 m$^3$/s$^2$</td>
+                        <td>Earth's mass times $G$</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.3 Height Reference</h3>
+            <p><strong>Important:</strong> WGS84 altitude ($h$) is height above the ellipsoid surface, not above mean sea level (MSL).</p>
+
+            <div class="formula-box">
+                $$ h_{WGS84} = h_{MSL} + N $$
+            </div>
+            <p>Where $N$ is the geoid height (undulation), which ranges from about -85 m to +85 m globally.</p>
+
+            <div class="note">
+                <strong>For this simulator:</strong> We use WGS84 ellipsoid height directly. In real-world applications, this can introduce errors up to ~50 m in extreme cases. For tactical simulations, this is generally acceptable. For precision applications, use EGM2008 geoid corrections.
+            </div>
+        </div>
+
+        <!-- Section 6: Sensor Models -->
+        <div class="card" id="sensors">
+            <h2>6. Sensor Models</h2>
+
+            <p>The simulator implements three sensor types, each with distinct measurement models and detection physics.</p>
+
+            <h3>6.1 Radar Sensor Model</h3>
+            <p>Active radar provides range, azimuth, elevation, and range-rate measurements from reflected RF energy.</p>
+
+            <div class="formula-box">
+                <p><strong>Spherical coordinate conversion:</strong></p>
+                $$ r = \sqrt{x^2 + y^2 + z^2} $$
+                $$ \alpha = \arctan\left(\frac{y}{x}\right) \times \frac{180}{\pi} $$
+                $$ \epsilon = \arctan\left(\frac{z}{\sqrt{x^2 + y^2}}\right) \times \frac{180}{\pi} $$
+
+                <p><strong>Measurement model (with noise):</strong></p>
+                $$ r_{meas} = r_{true} + \mathcal{N}(0, \sigma_r) $$
+                $$ \alpha_{meas} = \alpha_{true} + \mathcal{N}(0, \sigma_\alpha) $$
+                $$ \epsilon_{meas} = \epsilon_{true} + \mathcal{N}(0, \sigma_\epsilon) $$
+                $$ \dot{r}_{meas} = \dot{r}_{true} + \mathcal{N}(0, \sigma_{\dot{r}}) $$
+            </div>
+
+            <h3>6.2 Signal-to-Noise Ratio</h3>
+            <p>Radar detection depends on SNR, which decreases with the fourth power of range.</p>
+
+            <div class="formula-box">
+                <p><strong>Radar equation (simplified):</strong></p>
+                $$ P_r = \frac{P_t G^2 \sigma \lambda^2}{(4\pi)^3 R^4} $$
+
+                <p><strong>SNR model:</strong></p>
+                $$ SNR_{dB} = SNR_{ref} - 40 \log_{10}\left(\frac{R}{R_{ref}}\right) $$
+
+                <p>where $SNR_{ref}$ is the reference SNR at range $R_{ref}$.</p>
+            </div>
+
+            <h3>6.3 Probability of Detection</h3>
+            <p>Detection probability follows a smooth threshold model based on SNR.</p>
+
+            <div class="formula-box">
+                $$ P_d = \begin{cases}
+                    0.01 & \text{if } SNR < 5 \text{ dB} \\
+                    0.99 & \text{if } SNR > 25 \text{ dB} \\
+                    0.5 + 0.5 \tanh\left(\frac{SNR - SNR_{th}}{4}\right) & \text{otherwise}
+                \end{cases} $$
+
+                <p>where $SNR_{th} \approx 13$ dB is the detection threshold.</p>
+            </div>
+
+            <h3>6.4 ESM (Radar Warning Receiver)</h3>
+            <p>ESM is a passive sensor detecting radar emissions. Provides angle-of-arrival only.</p>
+
+            <div class="formula-box">
+                <p><strong>Angle-only measurements:</strong></p>
+                $$ \alpha_{meas} = \alpha_{true} + \mathcal{N}(0, \sigma_\alpha^{ESM}) $$
+                $$ \epsilon_{meas} = \epsilon_{true} + \mathcal{N}(0, \sigma_\epsilon^{ESM}) $$
+
+                <p><strong>Signal strength (decreases with $R^2$):</strong></p>
+                $$ S = S_{ref} \left(\frac{R_{ref}}{R}\right)^2 $$
+            </div>
+
+            <div class="note">
+                <strong>ESM Detection:</strong> Targets must have active radar emissions to be detected by ESM. Targets without emitters are invisible.
+            </div>
+
+            <h3>6.5 IR Sensor Model</h3>
+            <p>Infrared sensors detect thermal signatures passively. Detection depends on target temperature and atmospheric conditions.</p>
+
+            <div class="formula-box">
+                <p><strong>IR intensity (inverse square + attenuation):</strong></p>
+                $$ I = I_{base} \left(\frac{R_{ref}}{R}\right)^2 \cdot 10^{-\alpha R / 10} $$
+
+                <p>where $\alpha$ is atmospheric attenuation (typically ~0.5 dB/km at low altitude).</p>
+
+                <p><strong>IR signature by target type:</strong></p>
+                <table>
+                    <tr><td>Fighter (afterburning)</td><td>$I_{base} = 100$</td></tr>
+                    <tr><td>Bomber</td><td>$I_{base} = 80$</td></tr>
+                    <tr><td>Missile (rocket)</td><td>$I_{base} = 200$</td></tr>
+                    <tr><td>Transport</td><td>$I_{base} = 40$</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section 7: Sensor Geometry -->
+        <div class="card" id="geometry">
+            <h2>7. Sensor Geometry and Mounting</h2>
+
+            <h3>7.1 Sensor-to-World Transformation</h3>
+            <p>Sensor measurements are in the sensor body frame. The full transformation chain is:</p>
+
+            <div class="formula-box">
+                $$ \vec{r}_{world} = T_{sensor \rightarrow world} \cdot T_{mount} \cdot \vec{r}_{sensor} $$
+
+                <p><strong>Where:</strong></p>
+                $$ T_{sensor \rightarrow world} = T_{body \rightarrow world} \cdot T_{mount} $$
+
+                <p><strong>Platform body to world:</strong></p>
+                $$ T_{body \rightarrow world} = R_z(\psi) R_y(\theta) R_x(\phi) $$
+
+                <p>using 3-2-1 Euler angles (yaw-pitch-roll).</p>
+            </div>
+
+            <h3>7.2 Mount Offset</h3>
+            <p>Sensors can be offset from the platform centroid and canted at an angle.</p>
+
+            <div class="formula-box">
+                <p><strong>Mount position offset:</strong></p>
+                $$ \vec{r}_{sensor} = \vec{r}_{platform} + R_{body} \cdot \vec{\Delta}_{mount} $$
+
+                <p><strong>Mount orientation offset:</strong></p>
+                $$ R_{sensor} = R_{body} \cdot R_{mount} $$
+            </div>
+
+            <div class="example">
+                <strong>Example:</strong> Nose-mounted radar 2m below and 1m forward of centroid:
+                <ul>
+                    <li>Mount position: $[1, 0, -2]$ m (body frame)</li>
+                    <li>Mount orientation: $[0, 0, 0]$ deg (aligned with body)</li>
+                </ul>
+            </div>
+
+            <h3>7.3 Field of View Model</h3>
+            <p>Targets are detected only if within the sensor's angular FOV.</p>
+
+            <div class="formula-box">
+                <p><strong>FOV check:</strong></p>
+                $$ |\alpha_{target}| \leq \frac{\Omega_{az}}{2} \quad \text{and} \quad |\epsilon_{target}| \leq \frac{\Omega_{el}}{2} $$
+
+                <p>where $\Omega_{az}$ and $\Omega_{el}$ are total azimuth and elevation FOV.</p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Azimuth FOV</th>
+                        <th>Elevation FOV</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Surveillance Radar</td>
+                        <td>120 deg</td>
+                        <td>40 deg</td>
+                        <td>Sector scan</td>
+                    </tr>
+                    <tr>
+                        <td>ESM</td>
+                        <td>360 deg</td>
+                        <td>60 deg</td>
+                        <td>Full azimuth coverage</td>
+                    </tr>
+                    <tr>
+                        <td>IRST</td>
+                        <td>90 deg</td>
+                        <td>30 deg</td>
+                        <td>Sector, passive</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 8: Measurement Error Models -->
+        <div class="card" id="errors">
+            <h2>8. Measurement Error Models</h2>
+
+            <p>Each sensor has characteristic noise parameters that model measurement uncertainty.</p>
+
+            <h3>8.1 Gaussian Noise Model</h3>
+            <p>All sensor noise is modeled as additive zero-mean Gaussian.</p>
+
+            <div class="formula-box">
+                $$ z = h(x) + v, \quad v \sim \mathcal{N}(0, R) $$
+
+                <p><strong>Measurement covariance:</strong></p>
+                $$ R = \begin{bmatrix}
+                    \sigma_r^2 & 0 & 0 & 0 \\
+                    0 & \sigma_\alpha^2 & 0 & 0 \\
+                    0 & 0 & \sigma_\epsilon^2 & 0 \\
+                    0 & 0 & 0 & \sigma_{\dot{r}}^2
+                \end{bmatrix} $$
+            </div>
+
+            <h3>8.2 Typical Noise Values</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>$\sigma_r$ (m)</th>
+                        <th>$\sigma_\alpha$ (deg)</th>
+                        <th>$\sigma_\epsilon$ (deg)</th>
+                        <th>$\sigma_{\dot{r}}$ (m/s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Search Radar</td>
+                        <td>50</td>
+                        <td>0.5</td>
+                        <td>0.5</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Fire Control Radar</td>
+                        <td>10</td>
+                        <td>0.1</td>
+                        <td>0.1</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>ESM</td>
+                        <td>-</td>
+                        <td>2.0</td>
+                        <td>3.0</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>IRST</td>
+                        <td>~15%$\times$R</td>
+                        <td>1.0</td>
+                        <td>1.5</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>Range-rate (Doppler):</strong> Only active radar with coherent processing can measure range-rate. Passive sensors (ESM, IR) cannot.
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="card">
+            <h2>Summary</h2>
+
+            <p>This document has covered the mathematical foundations of the scenario simulator:</p>
+
+            <ul>
+                <li><strong>Coordinate Systems:</strong> ECEF and geodetic (LLA) representations</li>
+                <li><strong>Transformations:</strong> Conversion formulas using WGS84 ellipsoid</li>
+                <li><strong>Attitude:</strong> Heading, pitch, and roll from velocity vector</li>
+                <li><strong>Trajectories:</strong> Waypoint interpolation methods</li>
+                <li><strong>Reference:</strong> WGS84 ellipsoid parameters</li>
+                <li><strong>Sensor Models:</strong> Radar, ESM, and IR measurement equations</li>
+                <li><strong>Geometry:</strong> Sensor mounting and FOV calculations</li>
+            </ul>
+
+            <p>For questions or improvements, refer to the MATLAB source files or consult the Sensor Fusion and Tracking Toolbox documentation.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>Scenario Simulator &copy; 2024 | Mathematical Reference Documentation</p>
+    </footer>
+</body>
+</html>
